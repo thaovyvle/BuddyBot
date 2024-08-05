@@ -1,6 +1,7 @@
 ## BuddyBot
 
 Headstarter AI - SWE Fellowship
+
 Project 3: AI Customer Support
 
 ```bash
