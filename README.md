@@ -1,8 +1,7 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## BuddyBot
 
-## Getting Started
-
-First, run the development server:
+Headstarter AI - SWE Fellowship
+Project 3: AI Customer Support
 
 ```bash
 npm run dev
