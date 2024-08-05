@@ -1,8 +1,8 @@
-## BuddyBot
+## BuddyBot - AI Customer Support
 
 Headstarter AI - SWE Fellowship
 
-Project 3: AI Customer Support
+Project 3
 
 
 ## Technologies
