@@ -1,4 +1,4 @@
-## BuddyBot - AI Customer Support
+## PlantPal - AI Customer Support
 
 Headstarter AI - SWE Fellowship
 
