@@ -1,5 +1,114 @@
 import {NextResponse} from 'next/server' // Import NextResponse from Next.js for handling responses
 import OpenAI from 'openai' // Import OpenAI library for interacting with the OpenAI API
+import { BedrockRuntime, BedrockRuntimeOptions, BedrockRuntimeClient, InvokeModelWithResponseStreamCommand, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime'
+import { NextRequest } from 'next/server'
+import { fromEnv } from "@aws-sdk/credential-providers"
+import { bedrock, createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
+import { generateText, streamText } from 'ai'
+
+const decoder = new TextDecoder();
+// const bedrock = new BedrockRuntime({
+//   region: "us-west-2",
+//   credentials: fromEnv()
+// })
+
+async function* makeIterator(messages){
+  const command = new InvokeModelWithResponseStreamCommand({
+    modelId: "meta.llama3-1-405b-instruct-v1:0",
+    contentType: "application/json",
+    accept: "application/json",
+    body: JSON.stringify({
+      prompt:  JSON.stringify(messages),
+      max_gen_len: 100,
+      temperature: 0.5,
+      top_p: 0.9,
+    })
+  })
+
+  console.log(command) // TODO: remove this later
+
+  try {
+    console.log("calling bedrock...")
+    const resp = await bedrock.send(command)
+
+
+    if (resp.body){
+      console.log(resp.body)
+      // const json = JSON.parse(decoder.decode(resp.body.transformToString()))
+
+      for await (const chunk of resp.body){
+        if (chunk.chunk) {
+          try {
+            const json = JSON.parse(decoder.decode(chunk.chunk.bytes))
+
+            if (json.stop_reason == null) {
+              console.log(json.generation + " ")
+              yield json.generation
+            }
+          } catch (error) {
+            console.log(error)
+            yield " "
+          }
+        }
+      }
+    }
+    
+    
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+function iteratorToStream(iterator) {
+  return new ReadableStream({
+    async pull(controller) {
+      const { value, done } = await iterator.next();
+
+      if (done) {
+        controller.close();
+      } else {
+        controller.enqueue(value);
+      }
+    },
+  });
+}
+
+export async function GET() {
+  const iterator = makeIterator([]);
+  const stream = iteratorToStream(iterator);
+  
+  return new ReportingObserver(stream);
+}
+
+
+export async function POST(request) {
+  const req = await request.json()
+
+  const bedrock = createAmazonBedrock({
+    bedrockOptions: {
+      region: "us-west-2",
+      credentials: fromEnv()
+    }
+  });
+
+  const text = await generateText({
+    model: bedrock('meta.llama3-1-405b-instruct-v1:0'),
+    prompt: JSON.stringify(req.messages),
+  });
+
+  return new Response(text.text) 
+
+  // const iterator = makeIterator(req.messages)
+  // const stream  = iteratorToStream(iterator)
+  // return new Response(stream)
+}
+
+
+
+
+/**
+ * Chat GPT STUFF
+
 
 // System prompt for the AI, providing guidelines on how to respond to users
 const systemPrompt = ` BuddyBot is a friendly and efficient customer support assistant designed to help users with their inquiries by providing accurate, concise, and helpful responses. It handles a wide range of topics, including account issues, product information, troubleshooting, and general inquiries. BuddyBot always responds politely and maintains a positive tone. If BuddyBot does not have the answer, it guides users on how they can find the information or escalates the issue to a human representative.`
@@ -39,3 +148,4 @@ export async function POST(req) {
 
   return new NextResponse(stream) // Return the stream as the response
 }
+  */
