@@ -156,7 +156,7 @@ export default function Chat() {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      backgroundColor='#222a29'
+      backgroundColor='#fffbdf'
     >
       <Stack
         direction="column"
@@ -168,6 +168,7 @@ export default function Chat() {
         borderRadius={10}
         spacing={2}
         overflow="hidden"
+        boxShadow="0px 4px 10px rgba(0, 0, 0, 0.4)"
       >
         <Stack
           direction={'column'}
@@ -178,27 +179,55 @@ export default function Chat() {
         >
           {messages.map((message, index) => (
             <Box
-              key={index}
-              display="flex"
-              justifyContent={
-                message.role === 'assistant' ? 'flex-start' : 'flex-end'
-              }
-            >
+            key={index}
+            display="flex"
+            justifyContent={
+              message.role === 'assistant' ? 'flex-start' : 'flex-end'
+            }
+            alignItems="center" 
+          >
+            {message.role === 'assistant' && (
               <Box
-                bgcolor={
-                  message.role === 'assistant'
-                    ? '#86ba95'
-                    : '#06a177'
-                }
-                color="white"
-                borderRadius={message.role === 'assistant' 
-                    ? '16px 16px 16px 0px' 
-                    : '16px 16px 0px 16px'}
-                p={3}
-              >
-                {message.content}
-              </Box>
+                component="img"
+                src="/assistantAvatar.png" 
+                alt="Assistant"
+                sx={{
+                  width: 55, 
+                  height: 55,
+                  marginRight: 1, 
+                }}
+              />
+            )}
+            
+            <Box
+              bgcolor={
+                message.role === 'assistant'
+                  ? '#86ba95'
+                  : '#06a177'
+              }
+              color="white"
+              borderRadius={message.role === 'assistant' 
+                  ? '16px 16px 16px 0px' 
+                  : '16px 16px 0px 16px'}
+              p={3}
+            >
+              {message.content}
             </Box>
+            
+            {message.role === 'user' && (
+              <Box
+                component="img"
+                src="/userAvatar.png" 
+                alt="User"
+                sx={{
+                  width: 55,
+                  height: 55,
+                  marginLeft: 1, 
+                }}
+              />
+            )}
+          </Box>
+          
           ))}
           <div ref={messagesEndRef} />
         </Stack>

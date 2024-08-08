@@ -32,6 +32,9 @@ export default function Home() {
             width="100%" 
             paddingX={3}
             backgroundColor={'#06a177'}
+            position="sticky"
+            top={0}
+            zIndex={1}
           >
             <IconButton 
               onClick={handleGoBack} 
@@ -40,7 +43,7 @@ export default function Home() {
               <ArrowBackIcon />
             </IconButton>
             <Typography variant={'h5'} color={'white'} textAlign={'center'} fontWeight={"bold"} backgroundColor={'#06a177'} padding={'20px'} flexGrow={1} paddingLeft={'0px'}>
-              Chat with AI PlantPal
+              Chat with AI Plant Assistant
             </Typography>
           </Stack>
           <Chat />
